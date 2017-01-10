@@ -1,0 +1,71 @@
+* Clj-vlc
+
+** Summary
+clj-vlc is a simple wrapper for VLC media player that works over TCP.
+
+** How to use
+
+1) to start a VLC server on localhost:2150 use
+   #+BEGIN_SRC clojure :noeval
+   (def c (start-vlc-server 2150))
+   #+END_SRC
+2) to list the commands available use 
+  #+BEGIN_SRC clojure :noeval
+  (map println (run-vlc-cmd c :help))
+  #+END_SRC
+3) any of the command on the list can be used with the specified input
+   by making it a keyword: for example, we can use
+   #+BEGIN_SRC clojure :noeval
+   (run-vlc-cmds 
+    c
+    :add 
+      "https://youtu.be/ecIWPzGEbFc"
+      "http://cdn.media.ccc.de/congress/2016/h264-hd/33c3-8369-eng-Machine_Dreams.mp4"
+    :play 
+    )
+   #+END_SRC
+
+** Complete example
+#+BEGIN_SRC clojure :noeval
+; start vlc on port 2150 of localhost
+(def c (start-vlc-server 2150))
+; print help with available commands on REPL
+(map println (run-vlc-cmd c :help))
+; let's watch some cool videos
+(run-vlc-cmds c
+      :add 
+       "https://youtu.be/ecIWPzGEbFc"
+       "http://cdn.media.ccc.de/congress/2016/h264-hd/33c3-8369-eng-Machine_Dreams.mp4"
+     :play)
+; maybe just listen
+(run-vlc-cmd c :vtrack "-1")
+; let's stop here
+(run-vlc-cmd c :stop)
+; let's stop VLC from running
+(end-vlc-server c)
+#+END_SRC
+** Requirements
+
+- A version of VLC is installed in the system
+- clj-tcp >= 1.0.1
+** Todos
+*** TODO Return map instead of string
+I may want to know when VLC could not run a result:
+
+this test case should pass:
+
+#+BEGIN_SRC clojure
+(def r (run-vlc-cmds c :add "my-invented-file"))
+
+(deftest better-return-test
+  (testing "We want a map instead of a string"
+    (is (= r '(#{:res "> " :err "VLC-error-here"})))))
+#+END_SRC
+
+
+*** TODO Manage errors without exceptions
+** License
+Basically every one can use this software as they like with a look to
+the restrictions of the LGPL
+(https://www.gnu.org/licenses/lgpl-3.0.txt) (thanks FSF people for all
+your efforts!).
