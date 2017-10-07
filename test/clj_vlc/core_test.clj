@@ -28,7 +28,7 @@
          (is (thrown-with-msg? Exception #"Input commands are invalid!" (run-vlc-cmds c :playnow "Now I said!")))
          (Thread/sleep 100) ; VLC takes a bit of time to run the
                             ; video, we do not want to close the
-                            ; connection to fast
+                            ; connection too fast
          (end-vlc-server c))))
 
 (deftest test-end-vlc-server
